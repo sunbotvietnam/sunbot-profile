@@ -1,0 +1,19 @@
+name: Export profile assets
+on:
+  push:
+    branches:
+      - agent/export-profile-assets
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sunbot-profile-assets
+          path: |
+            logo-sunbot.png
+            assets/images/*.jpg
+            assets/images/*.png
+          if-no-files-found: error
+          retention-days: 1
