@@ -1,0 +1,113 @@
+name: Sunbot profile language sync
+
+on:
+  push:
+    paths:
+      - '.github/workflows/profile-language-sync.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  sync-profile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore full profile and apply 2026 messaging
+        shell: bash
+        run: |
+          git show 94bfc061b792127f7210758d647cb6ba3dd69af2:index.html > index.html
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          s = s.replace('<title>SUNBOT | Hệ Sinh Thái Giáo Dục Công Nghệ</title>', '<meta name="description" content="Sunbot – hệ thống giáo dục công nghệ dành cho trẻ mầm non, phát triển bởi KIRO Việt Nam. HolonIQ by QS Southeast Asia EdTech 50, 2025 & 2026.">\n    <title>SUNBOT | Hệ thống Giáo dục Công nghệ Mầm non</title>')
+
+          hero = '''<!-- 01. HERO SECTION -->
+    <section class="relative w-full min-h-[90vh] flex items-center justify-center pt-20 hero-bg overflow-hidden">
+        <img src="./assets/images/hero-bg.jpg" class="hero-img-cover" alt="Lớp học Sunbot" onerror="this.style.display='none'">
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-400 rounded-full blur-[120px] opacity-20 animate-pulse"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-slate-300 rounded-full blur-[120px] opacity-20"></div>
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+            <div class="animate-on-scroll z-10 pt-10">
+                <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-orange-200 bg-white shadow-sm text-orange-600 font-black tracking-widest text-[11px] mb-6 uppercase">
+                    <span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span></span>
+                    Giáo dục công nghệ dành cho trẻ mầm non
+                </div>
+                <h1 class="text-5xl md:text-6xl lg:text-[68px] font-black text-slate-900 mb-6 tracking-tight">Công nghệ bắt đầu từ<br><span class="text-gradient-3d">cách trẻ tư duy</span></h1>
+                <p class="text-lg text-slate-600 font-medium mb-8 max-w-xl pr-4 leading-relaxed">Sunbot là hệ thống giáo dục công nghệ dành cho trẻ mầm non, kết hợp chương trình, robot và học cụ tương tác, học liệu số, đào tạo giáo viên và hệ thống hỗ trợ triển khai tại trường.</p>
+                <p class="text-sm font-bold text-slate-500 uppercase tracking-[.16em] mb-10">Robot là học cụ. Trẻ là trung tâm. Giáo viên kiến tạo trải nghiệm.</p>
+                <div class="flex flex-wrap gap-4"><a href="#ve-chung-toi" class="btn-3d-orange px-8 py-4 rounded-full text-sm font-bold tracking-wide uppercase">Khám phá Sunbot</a></div>
+            </div>
+            <div class="hidden lg:block animate-on-scroll delay-200 relative">
+                <div class="unified-media-frame hoverable rotate-2 hover:rotate-0 transition-transform duration-500"><div class="media-inner"><img src="./assets/images/hero-overlay-lop-hoc.jpg" alt="Lớp học Sunbot"></div></div>
+                <div class="absolute -bottom-8 -left-8 bg-white p-5 rounded-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.15)] border border-slate-100 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-300 to-orange-600 flex items-center justify-center text-white font-black text-xl shadow-inner">2x</div>
+                    <div><p class="text-xl font-black text-slate-900 mb-0 leading-none">2025 &amp; 2026</p><p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2">HolonIQ by QS · SEA EdTech 50</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    '''
+          s = re.sub(r'<!-- 01\. HERO SECTION -->.*?(?=<!-- 01\.5 HOLONIQ BANNER)', hero, s, flags=re.S)
+
+          holoniq = '''<!-- 01.5 HOLONIQ BANNER (VINH DANH KHU VỰC) -->
+    <section class="w-full bg-[#0f172a] border-y border-slate-800 py-8 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIi8+PC9zdmc+')]"></div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-[1.1fr_1.9fr] gap-8 items-center">
+            <div>
+                <p class="text-orange-500 font-bold uppercase tracking-widest text-[11px] mb-2">Được ghi nhận trong hệ sinh thái EdTech Đông Nam Á</p>
+                <h2 class="text-white text-2xl md:text-3xl font-black">HolonIQ by QS<br><span class="text-orange-400">Southeast Asia EdTech 50</span></h2>
+            </div>
+            <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 md:p-7 shadow-xl">
+                <p class="text-white text-lg font-bold mb-2">Sunbot được lựa chọn hai năm liên tiếp: 2025 và 2026.</p>
+                <p class="text-slate-300 text-sm leading-relaxed">Southeast Asia EdTech 50 là danh sách thường niên của HolonIQ by QS ghi nhận các doanh nghiệp công nghệ giáo dục triển vọng trong khu vực, dựa trên dữ liệu thị trường kết hợp đánh giá của đội ngũ nghiên cứu và chuyên gia.</p>
+            </div>
+        </div>
+    </section>
+
+    '''
+          s = re.sub(r'<!-- 01\.5 HOLONIQ BANNER.*?(?=<!-- 02\. VỀ CHÚNG TÔI)', holoniq, s, flags=re.S)
+
+          replacements = {
+              'Mentoring': 'Đồng hành chuyên môn',
+              'mentoring': 'đồng hành chuyên môn',
+              'Learning Kits': 'Bộ học cụ',
+              'Learning Kit': 'Bộ học cụ',
+              'Partner School': 'Trường đối tác',
+              'Core Program': 'Chương trình cốt lõi',
+              'School Experience': 'Hoạt động trải nghiệm tại trường',
+              'Teacher Training': 'Đào tạo giáo viên',
+              'Implementation System': 'Hệ thống triển khai',
+              'Quality Assurance': 'Đảm bảo chất lượng',
+              'QA &': 'Đảm bảo chất lượng &',
+              '& QA': '& Đảm bảo chất lượng',
+              '46K+': '45K+',
+              '46.000+': '45.000+',
+              'Cử nhân Kinh tế Ngoại thương. ': '',
+              'Cử nhân Kinh tế Ngoại thương.': '',
+          }
+          for a,b in replacements.items():
+              s = s.replace(a,b)
+
+          s = s.replace('Sunbot là chương trình giáo dục công nghệ mầm non duy nhất hiện nay được thẩm định & chứng nhận bởi:', 'Nội dung chuyên môn của Sunbot đã trải qua quá trình thẩm định và tham vấn bởi các đơn vị nghiên cứu giáo dục có liên quan:')
+          s = s.replace('Thẩm Định Chuyên Môn Quốc Gia', 'Thẩm định & Tham vấn Chuyên môn')
+
+          # Tránh viết tắt QA đứng riêng trong nội dung hiển thị.
+          s = re.sub(r'(?<![A-Za-z])QA(?![A-Za-z])', 'Đảm bảo chất lượng', s)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+
+          rm -f .github/workflows/profile-language-sync.yml
+          git config user.name "sunbotvietnam"
+          git config user.email "kiroteam2025@gmail.com"
+          git add index.html .github/workflows/profile-language-sync.yml
+          git commit -m "Restore full Sunbot profile and localize 2026 messaging [profile-sync]"
+          git push
